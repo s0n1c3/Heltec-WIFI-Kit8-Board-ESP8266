@@ -1,0 +1,27 @@
+# with timeout 300s:
+# tested
+
+Rule1
+ON System#Boot DO var10 1; Power1 1; RuleTimer1 300 ENDON
+ON Button4#ACTION=SINGLE DO backlog Power1 1; RuleTimer1 300; ADD10 1; IF (%var10%>5) var10 1 ENDIF; event showmenu ENDON
+
+Rule2
+ON Button3#ACTION=SINGLE DO backlog Power1 1; RuleTimer1 300; SUB10 1; IF (%var10%<1) var10 5 ENDIF; event showmenu ENDON
+
+Rule3
+ON tele-SCD40#CarbonDioxide DO var1 %value% ENDON
+ON tele-SCD40#eCO2 DO var2 %value% ENDON
+ON tele-SCD40#Temperature DO var3 %value% ENDON
+ON tele-SCD40#Humidity DO var4 %value% ENDON
+ON tele-SCD40#DewPoint DO var5 %value% ENDON
+ON tele-SCD40 DO event showmenu ENDON
+
+ON event#showmenu 
+ DO IF (%var10%==1) DisplayText [zs3x0y1]%var1%ppm; DisplayText [s2x10y31]CO2
+ ELSEIF (%var10%==2) DisplayText [zs3x0y1]%var2%ppm; DisplayText [s2x10y31]eCO2
+ ELSEIF (%var10%==3) DisplayText [zs3x0y1]%var3%C; DisplayText [s2x8y31]Temperatur
+ ELSEIF (%var10%==4) DisplayText [zs3x0y1]%var4%%; DisplayText [s2x10y31]Humidity
+ ELSEIF (%var10%==5) DisplayText [zs3x0y1]%var5%C; DisplayText [s2x10y31]Taupunkt
+ENDIF ENDON
+
+ON Rules#Timer=1 DO Power1 0 ENDON
